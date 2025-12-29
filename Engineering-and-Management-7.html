@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>איזו התמחות מתאימה לי? | אפקה</title>
+  <style>
+    /* הגדרת משתנים */
+    :root {
+      --afeka-green: #14967d; 
+      --afeka-lime: #befa23;
+      --afeka-dark: #000; 
+      --afeka-bg: #f7f8fa; 
+      --afeka-border: #d8d8d8;
+      --font-rag: "RAG Sans", "RAG Sans Hebrew", sans-serif;
+    }
+
+    /* הגדרה גלובלית מחייבת לכל אלמנט אפשרי בדף */
+    * {
+      font-family: var(--font-rag) !important;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #fff;
+      overflow-x: hidden;
+      overflow-y: auto; 
+      -webkit-overflow-scrolling: touch;
+      -webkit-font-smoothing: antialiased;
+      /* וידוא פונט ברמת השורש */
+      font-family: var(--font-rag) !important;
+    }
+
+    /* וידוא ספציפי לכפתורים, כותרות וטבלאות שלפעמים מקבלים פונט מערכת */
+    button, input, optgroup, select, textarea, h1, h2, h3, h4, h5, h6, th, td, span, div, p {
+      font-family: var(--font-rag) !important;
+    }
+
+    body::-webkit-scrollbar { width: 8px; }
+    body::-webkit-scrollbar-track { background: #f9f9f9; }
+    body::-webkit-scrollbar-thumb { background: var(--afeka-green); border-radius: 4px; }
+
+    .afeka-quiz { 
+      max-width: 100%; 
+      margin: 0 auto; 
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    
+    .header { 
+      padding: 12px; 
+      background: var(--afeka-dark); 
+      color: #fff; 
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .header h1 { 
+      margin: 0; 
+      font-size: 1.1rem; 
+      color: var(--afeka-lime); 
+      font-weight: 900; 
+      font-family: var(--font-rag) !important;
+    }
+    .header p { 
+      margin: 2px 0 0; 
+      opacity: 0.8; 
+      font-size: 0.8rem; 
+      font-family: var(--font-rag) !important;
+    }
+
+    .progress { height: 4px; background: var(--afeka-border); flex-shrink: 0; }
+    .progress-bar { height: 100%; background: var(--afeka-lime); width: 0%; transition: width 0.4s ease; }
+
+    .quiz-content { 
+      padding: 15px; 
+      flex-grow: 1; 
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step { display: none; }
+    .step.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .step-counter {
+      font-size: 0.85rem;
+      color: var(--afeka-green);
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .question-text { 
+      font-size: 1rem; 
+      font-weight: 800; 
+      margin-bottom: 15px; 
+      border-right: 4px solid var(--afeka-lime); 
+      padding-right: 10px; 
+      line-height: 1.3;
+      font-family: var(--font-rag) !important;
+    }
+
+    .options-grid { display: grid; gap: 8px; margin-bottom: 15px; }
+    
+    .opt-btn {
+      background: var(--afeka-bg); 
+      border: 1px solid var(--afeka-border); 
+      padding: 12px; 
+      text-align: right; 
+      cursor: pointer; 
+      font-size: 0.95rem; 
+      font-weight: 600;
+      transition: all 0.2s;
+      font-family: var(--font-rag) !important;
+    }
+    .opt-btn:hover { background: #eef0f2; border-right: 4px solid var(--afeka-green); }
+
+    .btn {
+      padding: 10px 20px; 
+      font-weight: 800; 
+      cursor: pointer; 
+      border: none;
+      background: var(--afeka-green); 
+      color: #fff; 
+      font-size: 0.9rem;
+      border-radius: 2px;
+      font-family: var(--font-rag) !important;
+    }
+    .btn-outline { background: transparent; border: 2px solid var(--afeka-green); color: var(--afeka-green); margin-top: 8px; }
+
+    /* Results */
+    #result-section { display: none; margin-bottom: 20px; }
+    .res-card { 
+      background: var(--afeka-bg); 
+      padding: 15px; 
+      border: 1px solid var(--afeka-border); 
+      margin-bottom: 15px;
+    }
+    .res-title { 
+      color: var(--afeka-green); 
+      font-size: 1.25rem; 
+      font-weight: 900; 
+      margin: 0 0 8px; 
+      font-family: var(--font-rag) !important;
+    }
+    .res-desc { 
+      line-height: 1.4; 
+      font-size: 0.9rem; 
+      margin-bottom: 12px; 
+      font-family: var(--font-rag) !important;
+    }
+
+    /* Table & Collapse */
+    .collapse-btn {
+      width: 100%;
+      text-align: right;
+      background: #f1f1f1;
+      border: 1px solid var(--afeka-border);
+      padding: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      font-family: var(--font-rag) !important;
+    }
+    .collapse-btn::after { content: '▼'; font-size: 0.7rem; }
+    .collapse-btn.open::after { content: '▲'; }
+
+    .compare-wrap { 
+      overflow-x: auto; 
+      border: 1px solid var(--afeka-border); 
+      border-top: none;
+      background: #fff; 
+      display: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .compare-wrap.open { display: block; }
+
+    .compare-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+    .compare-table th, .compare-table td { 
+      border: 1px solid var(--afeka-border); 
+      padding: 10px; 
+      text-align: right; 
+      font-size: 0.8rem;
+      line-height: 1.3;
+      vertical-align: top;
+      font-family: var(--font-rag) !important;
+    }
+    .compare-table th { background: #111; color: var(--afeka-lime); font-weight: 800; }
+    .compare-table .row-label { font-weight: 800; background: #f4f4f4; width: 100px; }
+    
+    .winner-col { background: rgba(20, 150, 125, 0.05) !important; font-weight: 700; }
+    th.winner-col { background: var(--afeka-green) !important; color: #fff !important; }
+
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 9999; display: none; }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="afeka-quiz">
+  <header class="header">
+    <h1>איזו התמחות מתאימה לי?</h1>
+    <p>תואר שני בהנדסה וניהול - מכללת אפקה</p>
+  </header>
+
+  <div class="progress"><div class="progress-bar" id="p-bar"></div></div>
+
+  <main class="quiz-content">
+    <div id="questions-container"></div>
+
+    <section id="result-section">
+      <div class="res-card">
+        <h2 class="res-title" id="res-title"></h2>
+        <p class="res-desc" id="res-desc"></p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn" id="res-link-btn">למידע נוסף באתר</button>
+          <button class="btn btn-outline" onclick="location.reload()">בדיקה חוזרת</button>
+        </div>
+      </div>
+
+      <button class="collapse-btn" onclick="app.toggleCompare()">השוואת התמחויות ופירוט מלא</button>
+      <div class="compare-wrap" id="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>מאפיין</th>
+              <th id="th-data">נתונים וניהול ידע</th>
+              <th id="th-business">מערכות עסקיות</th>
+              <th id="th-infra">מערכות תשתית</th>
+            </tr>
+          </thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const QUIZ_DATA = {
+    tracks: {
+      data: { 
+        title: 'מערכות נתונים וניהול ידע', 
+        desc: 'אתה מראה עניין גבוה בנתונים, ידע ארגוני, תובנות ותמיכה בקבלת החלטות. ההתמחות תאפשר לך להוביל תהליכי מידע, ניתוח נתונים וחדשנות מבוססת AI בארגונים.',
+        url: 'https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/data-systems-and-knowledge-management/' 
+      },
+      business: { 
+        title: 'מערכות עסקיות', 
+        desc: 'התשובות מצביעות על עניין עמוק בביזנס, אסטרטגיה, ניהול מוצר ותהליכים ארגוניים. ההתמחות מתאימה למי שרוצה להיות בצומת שבין טכנולוגיה ועסקים ולהוביל ערך עסקי.',
+        url: 'https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/business-systems/' 
+      },
+      infra: { 
+        title: 'מערכות תשתית', 
+        desc: 'הניקוד שלך מצביע על העדפה לעבודה עם מערכות רחבות היקף, תכנון פרויקטים וניתוח סיכונים. ההתמחות הייחודית באפקה מכשירה לתפקידים בעלי השפעה עירונית ולאומית.',
+        url: 'https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/infrastructure-systems/' 
+      },
+      tie: { 
+        title: 'התאמה למספר מסלולים', 
+        desc: 'המערכת זיהתה שני תחומי עניין המתאימים לך, אנו ממליצים שתקרא היטב את ההתמחויות ותבחר את זו שעונה הכי טוב על הכיוון העתידי של שאיפותיך.',
+        url: 'https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/' 
+      }
+    },
+    questions: [
+      {
+        q: 'מה תחום העבודה שמעניין אותך?',
+        opts: [
+          { t: 'פיתוח תובנות וניתוחי תהליכים', s: { data: 2, business: 1 } },
+          { t: 'פיתוח אסטרטגיות ותהליכים עסקיים', s: { business: 2, data: 1 } },
+          { t: 'פיתוח מערכות תשתית ובקרות', s: { infra: 2, data: 1 } }
+        ]
+      },
+      {
+        q: 'איזה סוג החלטות היית רוצה להוביל?',
+        opts: [
+          { t: 'החלטות המבוססות על ניתוח נתונים וידע ארגוני', s: { data: 2, business: 1 } },
+          { t: 'החלטות עסקיות על מוצרים, שירותים ותהליכים ארגוניים', s: { business: 2, data: 1 } },
+          { t: 'החלטות על פרויקטי תשתית, סיכונים והשפעה על המרחב הציבורי', s: { infra: 2, business: 1 } }
+        ]
+      },
+      {
+        q: 'איזה סוג ארגון אתה מדמיין לעצמך?',
+        opts: [
+          { t: 'ארגון עתיר נתונים, מערכות מידע וידע', s: { data: 2, business: 1 } },
+          { t: 'ארגון עסקי או טכנולוגי המתמקד במוצרים, שירותים ולקוחות', s: { business: 2, data: 1 } },
+          { t: 'גוף ציבורי או חברת תשתית', s: { infra: 2, business: 1 } }
+        ]
+      },
+      {
+        q: 'איך היית רוצה להשתמש ב־AI בעבודה?',
+        opts: [
+          { t: 'AI לניתוח נתונים, זיהוי דפוסים וניהול ידע', s: { data: 2, business: 1 } },
+          { t: 'AI לשיפור החלטות עסקיות, חווית לקוח ואוטומציה של תהליכים', s: { business: 2, data: 1 } },
+          { t: 'לחיזוי עומסים, תחזוקה מונעת וניהול סיכונים', s: { infra: 2, data: 1 } }
+        ]
+      }
+    ],
+    compareRows: [
+      ['מה מעניין אותי בעיקר?', 'נתונים, ידע, מערכות מידע ו־AI', 'ביזנס, אסטרטגיה, מוצרים ותהליכים', 'תשתיות, פרויקטים הנדסיים והשפעה מערכתית'],
+      ['אופי העבודה', 'אנליטי, מבוסס נתונים, חיזוי וקבלת החלטות', 'חיבור בין טכנולוגיה לניהול והובלת תהליכים', 'ניהול מערכות מורכבות ועתירות סיכון'],
+      ['איזה בעיות ארצה לפתור?', 'אובדן ידע, ניתוח נתונים, החלטות מבוססות AI', 'חוסר יעילות עסקית, תהליכים ומוצרים', 'תכנון, תפעול ותחזוקה של תשתיות'],
+      ['שילוב AI', 'AI לניתוח, חיזוי וניהול ידע', 'AI לתמיכה בהחלטות ואוטומציה עסקית', 'AI לניהול סיכונים, חיזוי ותחזוקה'],
+      ['תפקידי יעד', 'Data / Knowledge Manager, Analyst', 'Product, Strategy, Operations', 'Project / Infrastructure Manager'],
+      ['סוגי ארגונים', 'הייטק, תעשייה, ארגונים גדולים', 'חברות מוצר, פיננסים, סטארטאפים', 'גופים ציבוריים, חברות תשתית'],
+      ['למי זה מתאים?', 'אוהבי נתונים וחשיבה מערכתית', 'מי שרוצה להוביל ביזנס וטכנולוגיה', 'מי שמחפשים השפעה רחבת היקף']
+    ]
+  };
+
+  const app = {
+    step: 0,
+    answers: [],
+
+    init() {
+      this.renderQuestions();
+      this.renderTable();
+      this.showStep(0);
+    },
+
+    renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const total = QUIZ_DATA.questions.length;
+      container.innerHTML = QUIZ_DATA.questions.map((q, i) => `
+        <div class="step" id="step-${i}">
+          <div class="step-counter">שאלה ${i + 1} מתוך ${total}</div>
+          <div class="question-text">${q.q}</div>
+          <div class="options-grid">
+            ${q.opts.map((o, oi) => `
+              <button class="opt-btn" onclick="app.select(${i}, ${oi})">${o.t}</button>
+            `).join('')}
+          </div>
+          ${i > 0 ? `<button class="btn btn-outline" style="padding: 5px 12px; font-size: 0.8rem;" onclick="app.showStep(${i-1})">חזרה</button>` : ''}
+        </div>
+      `).join('');
+    },
+
+    renderTable() {
+      const body = document.getElementById('compare-body');
+      body.innerHTML = QUIZ_DATA.compareRows.map(row => `
+        <tr>
+          <td class="row-label">${row[0]}</td>
+          <td class="col-data">${row[1]}</td>
+          <td class="col-business">${row[2]}</td>
+          <td class="col-infra">${row[3]}</td>
+        </tr>
+      `).join('');
+    },
+
+    showStep(idx) {
+      this.step = idx;
+      document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === idx));
+      document.getElementById('p-bar').style.width = `${(idx / QUIZ_DATA.questions.length) * 100}%`;
+    },
+
+    select(sIdx, oIdx) {
+      this.answers[sIdx] = oIdx;
+      if (sIdx < QUIZ_DATA.questions.length - 1) this.showStep(sIdx + 1);
+      else this.calculate();
+    },
+
+    calculate() {
+      const scores = { data: 0, business: 0, infra: 0 };
+      this.answers.forEach((optIdx, qIdx) => {
+        const s = QUIZ_DATA.questions[qIdx].opts[optIdx].s;
+        for (let key in s) scores[key] += s[key];
+      });
+      const max = Math.max(...Object.values(scores));
+      const winners = Object.keys(scores).filter(k => scores[k] === max);
+      this.finish(winners);
+    },
+
+    finish(winners) {
+      document.getElementById('questions-container').style.display = 'none';
+      const key = winners.length > 1 ? 'tie' : winners[0];
+      
+      document.getElementById('res-title').textContent = QUIZ_DATA.tracks[key].title;
+      document.getElementById('res-desc').textContent = QUIZ_DATA.tracks[key].desc;
+      document.getElementById('res-link-btn').onclick = () => window.open(QUIZ_DATA.tracks[key].url, '_blank');
+
+      if (winners.length === 1) {
+        winners.forEach(w => {
+          document.getElementById(`th-${w}`).classList.add('winner-col');
+          document.querySelectorAll(`.col-${w}`).forEach(td => td.classList.add('winner-col'));
+        });
+      }
+
+      document.getElementById('result-section').style.display = 'block';
+      this.playConfetti();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    toggleCompare() {
+      const btn = document.querySelector('.collapse-btn');
+      const wrap = document.getElementById('compare-wrap');
+      btn.classList.toggle('open');
+      wrap.classList.toggle('open');
+    },
+
+    playConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.style.display = 'block';
+      let W = canvas.width = window.innerWidth;
+      let H = canvas.height = window.innerHeight;
+      const pieces = Array.from({ length: 40 }, () => ({
+        x: Math.random() * W, y: Math.random() * H - H,
+        r: Math.random() * 3 + 2, 
+        c: ['#befa23', '#14967d', '#000'][Math.floor(Math.random() * 3)],
+        v: Math.random() * 3 + 2, d: Math.random() * 10
+      }));
+
+      const step = () => {
+        ctx.clearRect(0,0,W,H);
+        pieces.forEach(p => {
+          p.y += p.v; p.x += Math.sin(p.d);
+          ctx.fillStyle = p.c;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+        });
+        if (pieces.length > 0 && pieces[0].y < H + 100) requestAnimationFrame(step);
+        else canvas.style.display = 'none';
+      };
+      step();
+    }
+  };
+
+  window.onload = () => app.init();
+</script>
+</body>
+</html>
