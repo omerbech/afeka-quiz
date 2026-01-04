@@ -3,22 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>איזו התמחות מתאימה לי? | אפקה</title>
   
-<!-- Version: Engineering-and-Management-8 -->
+  <title>איזו התמחות מתאימה לך? | אפקה</title>
   
+  <!-- Version: Engineering-and-Management-9 -->
+
+  
+  <link rel="icon" href="data:,">
+
   <style>
+    /* טעינה ישירה של פונט Rag-Sans משרתי אפקה */
+    @font-face {
+      font-family: 'Rag-sans';
+      src: url('https://www.afeka.ac.il/fonts/RAG-Sans-Regular.woff2') format('woff2'),
+           url('https://www.afeka.ac.il/fonts/RAG-Sans-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Rag-sans';
+      src: url('https://www.afeka.ac.il/fonts/RAG-Sans-Bold.woff2') format('woff2'),
+           url('https://www.afeka.ac.il/fonts/RAG-Sans-Bold.woff') format('woff');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       --afeka-green: #14967d; 
       --afeka-lime: #befa23;
       --afeka-dark: #000; 
       --afeka-bg: #f7f8fa; 
       --afeka-border: #d8d8d8;
-      --font-rag: "RAG Sans", Arial, sans-serif;
+      --font-main: "Rag-sans", Arial, sans-serif;
     }
 
-    * {
-      font-family: var(--font-rag) !important;
+    /* כפייה אגרסיבית על כל רכיב אפשרי בדף */
+    *, html, body, div, span, h1, h2, h3, h4, p, a, button, table, thead, tbody, tr, th, td, label {
+      font-family: var(--font-main) !important;
       box-sizing: border-box;
     }
 
@@ -28,6 +52,7 @@
       background: #fff;
       color: var(--afeka-dark);
       line-height: 1.5;
+      text-align: right;
     }
 
     /* Container */
@@ -56,6 +81,7 @@
       margin: 0;
       color: var(--afeka-lime);
       font-size: 2.2rem;
+      font-weight: bold !important;
     }
 
     /* Progress Bar */
@@ -79,7 +105,7 @@
 
     .q-text {
       font-size: 1.6rem;
-      font-weight: 800;
+      font-weight: bold !important;
       margin-bottom: 30px;
     }
 
@@ -96,7 +122,7 @@
       cursor: pointer;
       transition: 0.2s;
       text-align: right;
-      font-weight: 600;
+      font-weight: bold !important;
     }
 
     .opt-btn:hover {
@@ -116,7 +142,7 @@
       background: var(--afeka-lime);
       color: var(--afeka-dark);
       padding: 8px 20px;
-      font-weight: 800;
+      font-weight: bold !important;
       display: inline-block;
       margin-bottom: 20px;
     }
@@ -124,7 +150,7 @@
     .res-title {
       font-size: 2.5rem;
       color: var(--afeka-green);
-      font-weight: 900;
+      font-weight: bold !important;
       margin-bottom: 15px;
     }
 
@@ -157,11 +183,12 @@
     th {
       background: var(--afeka-dark);
       color: var(--afeka-lime);
+      font-weight: bold !important;
     }
 
     .cat-col {
       background: #f9f9f9;
-      font-weight: 800;
+      font-weight: bold !important;
       width: 160px;
     }
 
@@ -176,7 +203,7 @@
       color: #fff !important;
       padding: 15px 40px;
       text-decoration: none;
-      font-weight: 800;
+      font-weight: bold !important;
       display: inline-block;
       border: none;
       cursor: pointer;
@@ -254,7 +281,7 @@
       </div>
 
       <div style="margin-top:40px;">
-        <a href="https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/" class="primary-btn">למידע נוסף והרשמה</a>
+        <a href="#" id="final-cta" target="_blank" class="primary-btn">למידע נוסף והרשמה</a>
         <button onclick="location.reload()" class="primary-btn" style="background:#eee; color:#333 !important;">בדיקה חוזרת</button>
       </div>
     </div>
@@ -290,10 +317,26 @@ const QUIZ = {
     }
   ],
   results: {
-    data: { title: "מערכות נתונים וניהול ידע", desc: "אתם אנשים של מספרים ותובנות! ההתמחות הזו תעניק לכם את הכלים להוביל את עולמות ה-Data וה-AI בארגונים מודרניים." },
-    business: { title: "מערכות עסקיות", desc: "החשיבה שלכם היא שילוב מנצח של טכנולוגיה וביזנס. המסלול יכשיר אתכם להוביל אסטרטגיות מוצר ותהליכים עסקיים בשוק התחרותי." },
-    infra: { title: "מערכות תשתית", desc: "אתם רואים את התמונה הגדולה. זו ההתמחות עבור אלו שרוצים לנהל פרויקטים רחבי היקף ותשתיות הנדסיות קריטיות." },
-    tie: { title: "התאמה רב-תחומית", desc: "הפרופיל שלכם מתאים למספר מסלולים! אתם ורסטיליים ויכולים לשלב קורסים ממספר התמחויות לבניית מסלול אישי." }
+    data: { 
+      title: "מערכות נתונים וניהול ידע", 
+      desc: "אתם אנשים של מספרים ותובנות! ההתמחות הזו תעניק לכם את הכלים להוביל את עולמות ה-Data וה-AI בארגונים מודרניים.",
+      link: "https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/data-systems-and-knowledge-management/"
+    },
+    business: { 
+      title: "מערכות עסקיות", 
+      desc: "החשיבה שלכם היא שילוב מנצח של טכנולוגיה וביזנס. המסלול יכשיר אתכם להוביל אסטרטגיות מוצר ותהליכים עסקיים בשוק התחרותי.",
+      link: "https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/business-systems/"
+    },
+    infra: { 
+      title: "מערכות תשתית", 
+      desc: "אתם רואים את התמונה הגדולה. זו ההתמחות עבור אלו שרוצים לנהל פרויקטים רחבי היקף ותשתיות הנדסיות קריטיות.",
+      link: "https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/infrastructure-systems/"
+    },
+    tie: { 
+      title: "התאמה רב-תחומית", 
+      desc: "הפרופיל שלכם מתאים למספר מסלולים! אתם ורסטיליים ויכולים לשלב קורסים ממספר התמחויות לבניית מסלול אישי.",
+      link: "https://www.afeka.ac.il/academic-departments/msc/engineering-and-management/"
+    }
   }
 };
 
@@ -304,7 +347,6 @@ function renderQuestion() {
   const qObj = QUIZ.questions[step];
   const container = document.getElementById('q-box');
   
-  // Progress
   document.getElementById('progress-bar').style.width = (step / QUIZ.questions.length) * 100 + '%';
 
   container.innerHTML = `
@@ -340,6 +382,10 @@ function finishQuiz() {
   const res = QUIZ.results[winKey];
   document.getElementById('res-title').innerText = res.title;
   document.getElementById('res-desc').innerText = res.desc;
+  
+  // עדכון הלינק
+  const cta = document.getElementById('final-cta');
+  cta.href = res.link;
 
   if (winKey !== 'tie') {
     document.querySelectorAll(`.col-${winKey}`).forEach(el => el.classList.add('winner-col'));
@@ -347,7 +393,6 @@ function finishQuiz() {
   }
 
   startConfetti();
-  // Safe scroll within iframe
   resSection.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -387,4 +432,3 @@ window.onload = renderQuestion;
 </script>
 </body>
 </html>
-
